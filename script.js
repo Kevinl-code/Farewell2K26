@@ -2,7 +2,7 @@
 
 
 
-const revealTime = new Date("Feb 23, 2026 1:03:00").getTime();
+const revealTime = new Date("Feb 23, 2026 01:05:00").getTime();
 
 const timer = document.getElementById("timer");
 
@@ -183,5 +183,6 @@ document.getElementById("modal").onclick=()=>{
  document.getElementById("modal").style.display="none";
 
 };
+
 
 
