@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farewell 2K26 | When Will I See You Again</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- Countdown Lock -->
+<div id="lockScreen">
+  <h1>"When Will I See You Again"</h1>
+  <p>Farewell 2K26 – Reveal In</p>
+  <div id="timer"></div>
+</div>
+
+<!-- Curtain Stage -->
+<div id="curtainStage">
+  <div class="curtain left"></div>
+  <div class="curtain right"></div>
+</div>
+
+<!-- Title -->
+<section id="titleSection" class="hidden">
+  <h1>Farewell 2K26</h1>
+  <p>Bishop Heber College – PG Department of Data Science</p>
+</section>
+
+<!-- Seniors Reveal -->
+<section id="seniorsSection" class="hidden">
+  <h2>Our Beloved Seniors</h2>
+  <div id="photoFlight"></div>
+  <div id="collage"></div>
+</section>
+
+<!-- Professors -->
+<section id="profSection" class="hidden">
+  <h2>With Heartfelt Gratitude</h2>
+  <p>We thank our beloved Professors 🤍</p>
+  <div class="profGrid">
+    <img src="images/professors/1.jpg">
+    <img src="images/professors/2.jpg">
+    <img src="images/professors/3.jpg">
+  </div>
+</section>
+
+<!-- Invitation -->
+<section id="inviteSection" class="hidden">
+  <h2>You're Invited</h2>
+  <img id="poster" src="images/poster.jpg">
+</section>
+
+<!-- Agenda -->
+<section id="agendaSection" class="hidden">
+  <h2>Event Agenda</h2>
+  <div class="agendaGrid">
+    <button onclick="openAgenda(0)">Welcome</button>
+    <button onclick="openAgenda(1)">Fun Games</button>
+    <button onclick="openAgenda(2)">Cultural Performances</button>
+    <button onclick="openAgenda(3)">Memory Sharing</button>
+    <button onclick="openAgenda(4)">Awards</button>
+    <button onclick="openAgenda(5)">Dinner</button>
+    <button onclick="openAgenda(6)">Final Goodbye</button>
+  </div>
+</section>
+
+<!-- Modal -->
+<div id="modal">
+  <div id="modalContent"></div>
+</div>
+
+<!-- Video -->
+<section id="videoSection" class="hidden">
+  <h2>Our Memories</h2>
+  <video controls autoplay>
+    <source src="videos/memories.mp4" type="video/mp4">
+  </video>
+</section>
+
+<!-- Final Goodbye -->
+<section id="finalSection" class="hidden">
+  <h1>Some goodbyes are unfinished...</h1>
+  <p>Because hearts never say goodbye 🥹🫶</p>
+  <p>Forever in our hearts 🤍</p>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
