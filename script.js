@@ -1,16 +1,17 @@
 // ===== TIME LOCK =====
 
-const revealTime = new Date("Feb 24, 2026 10:38:00").getTime();
+const revealTime = new Date("Feb 23, 2026 01:05:00").getTime();
 const timer = document.getElementById("timer");
 
-const interval = setInterval(()=>{
+let countdown = setInterval(()=>{
+
  let now = new Date().getTime();
  let diff = revealTime - now;
 
  if(diff <= 0){
-   clearInterval(interval);
+   clearInterval(countdown);
    document.getElementById("lockScreen").style.display="none";
-   startPhotoCinematic();
+   startCinematic();
  }
 
  let d=Math.floor(diff/(1000*60*60*24));
@@ -19,70 +20,90 @@ const interval = setInterval(()=>{
  let s=Math.floor((diff%(1000*60))/1000);
 
  timer.innerHTML=`${d}d ${h}h ${m}m ${s}s`;
+
 },1000);
 
 
-// ===== PHOTO CINEMATIC =====
+// ===== CINEMATIC FLOW =====
 
-function startPhotoCinematic(){
+function startCinematic(){
  document.getElementById("photoSection").classList.remove("hidden");
-
- const container = document.getElementById("photoContainer");
-
- for(let i=1;i<=56;i++){
-
-   let img=document.createElement("img");
-   img.src=`images/seniors/${i}.jpg`;
-   img.classList.add("photo");
-
-   img.style.left=Math.random()*window.innerWidth+"px";
-   img.style.top=Math.random()*window.innerHeight+"px";
-
-   container.appendChild(img);
-
-   // Travel in
-   setTimeout(()=>{
-     img.style.opacity="1";
-     img.style.transform="scale(1)";
-   },200*i);
-
-   // Move to center
-   setTimeout(()=>{
-     img.style.left="50%";
-     img.style.top="50%";
-     img.style.transform="translate(-50%,-50%) scale(1.3)";
-   },4000);
-
-   // Scatter with neon glow
-   setTimeout(()=>{
-     img.style.left=Math.random()*window.innerWidth+"px";
-     img.style.top=Math.random()*window.innerHeight+"px";
-     img.style.transform="scale(1)";
-     img.classList.add("glow");
-   },7000);
- }
-
- // After full cinematic
- setTimeout(()=>{
-   document.getElementById("photoSection").classList.add("hidden");
-   showInvitation();
- },12000);
+ flyPhotos();
 }
 
 
-// ===== INVITATION =====
+// ===== PHOTO TRAVEL + ZOOM =====
 
-function showInvitation(){
+function flyPhotos(){
+
+ let container=document.getElementById("photoContainer");
+ const totalPhotos = 55; // EXACT 55
+
+ for(let i=1;i<=totalPhotos;i++){
+
+  let img=document.createElement("img");
+  img.src=`images/seniors/${i}.jpg`;
+
+  // Start scattered outside screen
+  img.style.top = Math.random()*window.innerHeight+"px";
+  img.style.left = (Math.random()*2>1? -200 : window.innerWidth+200)+"px";
+
+  container.appendChild(img);
+
+  // Cinematic entry
+  setTimeout(()=>{
+    img.style.opacity="1";
+    img.style.top = (window.innerHeight/2 - 150 + Math.random()*300)+"px";
+    img.style.left = (window.innerWidth/2 - 250 + Math.random()*500)+"px";
+    img.style.transform="scale(1)";
+  }, i*120);
+
+ }
+
+ // After all settle → zoom blast
+ setTimeout(()=>{
+   zoomCollage();
+ },9000);
+}
+
+
+// ===== ZOOM COLLAGE EFFECT =====
+
+function zoomCollage(){
+ let imgs=document.querySelectorAll("#photoContainer img");
+
+ imgs.forEach((img,index)=>{
+   setTimeout(()=>{
+     img.style.transform="scale(2)";
+   }, index*40);
+ });
+
+ // Fade to black
+ setTimeout(()=>{
+   document.getElementById("photoSection").classList.add("hidden");
+   document.getElementById("blackTransition").classList.remove("hidden");
+
+   setTimeout(()=>{
+     showPoster();
+   },2000);
+
+ },4000);
+}
+
+
+// ===== SHOW POSTER =====
+
+function showPoster(){
+ document.getElementById("blackTransition").classList.add("hidden");
  document.getElementById("inviteSection").classList.remove("hidden");
 
  setTimeout(()=>{
-   document.getElementById("inviteSection").classList.add("hidden");
-   showEvents();
- },8000);
+   startEvents();
+ },5000);
 }
 
 
-// ===== EVENTS SEQUENCE =====
+// ===== EVENT SEQUENCE =====
 
 const events=[
 "Welcome & Opening Ceremony",
@@ -94,26 +115,21 @@ const events=[
 "Final Emotional Goodbye"
 ];
 
-function showEvents(){
+function startEvents(){
+
+ document.getElementById("inviteSection").classList.add("hidden");
  document.getElementById("eventSection").classList.remove("hidden");
 
- const display=document.getElementById("eventDisplay");
+ let display=document.getElementById("eventDisplay");
  let i=0;
 
  function nextEvent(){
    if(i<events.length){
-     display.style.opacity="0";
-
-     setTimeout(()=>{
-       display.innerText=events[i];
-       display.style.opacity="1";
-       i++;
-     },500);
-
+     display.innerText=events[i];
+     i++;
      setTimeout(nextEvent,3000);
    }
  }
 
  nextEvent();
 }
-
