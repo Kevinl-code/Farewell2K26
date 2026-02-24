@@ -1,18 +1,16 @@
-// ===============================
-// ===== WAIT FOR DOM LOAD =======
-// ===============================
-
 window.addEventListener("DOMContentLoaded", () => {
 
-  // ===== TIME LOCK =====
+  // =========================
+  // COUNTDOWN
+  // =========================
 
   const revealTime = new Date("Feb 23, 2026 01:05:00").getTime();
   const timer = document.getElementById("timer");
 
-  let countdown = setInterval(() => {
+  const countdown = setInterval(() => {
 
-    let now = new Date().getTime();
-    let diff = revealTime - now;
+    const now = new Date().getTime();
+    const diff = revealTime - now;
 
     if (diff <= 0) {
       clearInterval(countdown);
@@ -20,19 +18,19 @@ window.addEventListener("DOMContentLoaded", () => {
       startCinematic();
     }
 
-    let d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    let s = Math.floor((diff % (1000 * 60)) / 1000);
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((diff % (1000 * 60)) / 1000);
 
     timer.innerHTML = `${d}d ${h}h ${m}m ${s}s`;
 
   }, 1000);
 
 
-  // ===============================
-  // ===== CINEMATIC FLOW ==========
-  // ===============================
+  // =========================
+  // CINEMATIC FLOW
+  // =========================
 
   function startCinematic() {
     document.getElementById("photoSection").classList.remove("hidden");
@@ -40,27 +38,27 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  // ===============================
-  // ===== PHOTO TRAVEL + ZOOM =====
-  // ===============================
+  // =========================
+  // PHOTO TRAVEL
+  // =========================
 
   function flyPhotos() {
 
-    let container = document.getElementById("photoContainer");
-    const totalPhotos = 58; // EXACT 55 PHOTOS
+    const container = document.getElementById("photoContainer");
+    container.innerHTML = ""; // clear before use
+
+    const totalPhotos = 58;
 
     for (let i = 1; i <= totalPhotos; i++) {
 
-      let img = document.createElement("img");
+      const img = document.createElement("img");
       img.src = `images/seniors/${i}.jpg`;
 
-      // Start from outside screen (left or right)
       img.style.top = Math.random() * window.innerHeight + "px";
       img.style.left = (Math.random() > 0.5 ? -200 : window.innerWidth + 200) + "px";
 
       container.appendChild(img);
 
-      // Cinematic movement toward center
       setTimeout(() => {
         img.style.opacity = "1";
         img.style.top = (window.innerHeight / 2 - 150 + Math.random() * 300) + "px";
@@ -69,20 +67,17 @@ window.addEventListener("DOMContentLoaded", () => {
       }, i * 120);
     }
 
-    // After settle → Zoom blast
-    setTimeout(() => {
-      zoomCollage();
-    }, 9000);
+    setTimeout(() => zoomCollage(), 9000);
   }
 
 
-  // ===============================
-  // ===== ZOOM COLLAGE ============
-  // ===============================
+  // =========================
+  // ZOOM EFFECT
+  // =========================
 
   function zoomCollage() {
 
-    let imgs = document.querySelectorAll("#photoContainer img");
+    const imgs = document.querySelectorAll("#photoContainer img");
 
     imgs.forEach((img, index) => {
       setTimeout(() => {
@@ -90,33 +85,33 @@ window.addEventListener("DOMContentLoaded", () => {
       }, index * 40);
     });
 
-    // Fade to black transition
     setTimeout(() => {
 
       document.getElementById("photoSection").classList.add("hidden");
       document.getElementById("blackTransition").classList.remove("hidden");
 
-      setTimeout(() => {
-        showPoster();
-      }, 2000);
+      setTimeout(() => showPoster(), 2000);
 
     }, 4000);
   }
 
 
-  // ===============================
-  // ===== SHOW INVITATION =========
-  // ===============================
+  // =========================
+  // SHOW POSTER
+  // =========================
 
   function showPoster() {
     document.getElementById("blackTransition").classList.add("hidden");
-    document.getElementById("inviteSection").classList.remove("hidden");
+
+    const invite = document.getElementById("inviteSection");
+    invite.classList.remove("hidden");
+    invite.style.opacity = "1";
   }
 
 
-  // ===============================
-  // ===== POSTER CLICK NAVIGATION =
-  // ===============================
+  // =========================
+  // POSTER CLICK
+  // =========================
 
   const poster = document.getElementById("poster");
 
@@ -125,32 +120,26 @@ window.addEventListener("DOMContentLoaded", () => {
     const invite = document.getElementById("inviteSection");
     const eventSection = document.getElementById("eventSection");
 
-    // Fade out invite
     invite.style.transition = "1s";
     invite.style.opacity = "0";
 
     setTimeout(() => {
 
       invite.classList.add("hidden");
-      invite.style.opacity = "1";
 
-      // Show events
       eventSection.classList.remove("hidden");
-      eventSection.style.opacity = "0";
+      eventSection.style.display = "flex";
+      eventSection.style.opacity = "1";
 
-      setTimeout(() => {
-        eventSection.style.transition = "1.5s";
-        eventSection.style.opacity = "1";
-        startEvents(); // Start events ONLY after click
-      }, 100);
+      startEvents(); // FORCE start here
 
     }, 1000);
   });
 
 
-  // ===============================
-  // ===== EVENT SEQUENCE ==========
-  // ===============================
+  // =========================
+  // EVENT SEQUENCE
+  // =========================
 
   const events = [
     "Welcome & Opening Ceremony",
@@ -164,15 +153,30 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function startEvents() {
 
-    let display = document.getElementById("eventDisplay");
+    const display = document.getElementById("eventDisplay");
+
+    if (!display) {
+      console.log("eventDisplay not found!");
+      return;
+    }
+
+    display.innerText = "";
+    display.style.opacity = "0";
+
     let i = 0;
 
     function nextEvent() {
-      if (i < events.length) {
+
+      if (i >= events.length) return;
+
+      display.style.opacity = "0";
+
+      setTimeout(() => {
         display.innerText = events[i];
+        display.style.opacity = "1";
         i++;
         setTimeout(nextEvent, 3000);
-      }
+      }, 500);
     }
 
     nextEvent();
