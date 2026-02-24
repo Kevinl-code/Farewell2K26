@@ -101,6 +101,32 @@ function showPoster(){
    startEvents();
  },9000);
 }
+// ===== POSTER CLICK NAVIGATION =====
+
+const poster = document.getElementById("poster");
+
+poster.addEventListener("click", () => {
+
+  // Fade out poster section
+  document.getElementById("inviteSection").style.opacity = "0";
+  document.getElementById("inviteSection").style.transition = "1s";
+
+  setTimeout(() => {
+
+    document.getElementById("inviteSection").classList.add("hidden");
+
+    // Show event section
+    document.getElementById("eventSection").classList.remove("hidden");
+    document.getElementById("eventSection").style.opacity = "0";
+
+    setTimeout(()=>{
+      document.getElementById("eventSection").style.transition="1.5s";
+      document.getElementById("eventSection").style.opacity="1";
+    },100);
+
+  },1000);
+
+});
 
 
 // ===== EVENT SEQUENCE =====
@@ -133,5 +159,6 @@ function startEvents(){
 
  nextEvent();
 }
+
 
 
