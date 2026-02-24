@@ -102,14 +102,15 @@ transition:0.6s;
 transform:scale(1.08);
 }
 
-#inviteSection,
-#eventSection{
+#inviteSection{
 opacity:1;
 transition:1s ease;
 }
 /* EVENTS */
 
 #eventSection{
+opacity:1;
+transition:1s ease;
 min-height:100vh;
 display:flex;
 flex-direction:column;
@@ -125,4 +126,5 @@ color:cyan;
 text-shadow:0 0 20px cyan;
 min-height:80px;
 }
+
 
