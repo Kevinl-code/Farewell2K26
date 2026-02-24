@@ -1,164 +1,181 @@
-// ===== TIME LOCK =====
+// ===============================
+// ===== WAIT FOR DOM LOAD =======
+// ===============================
 
-const revealTime = new Date("Feb 23, 2026 01:05:00").getTime();
-const timer = document.getElementById("timer");
+window.addEventListener("DOMContentLoaded", () => {
 
-let countdown = setInterval(()=>{
+  // ===== TIME LOCK =====
 
- let now = new Date().getTime();
- let diff = revealTime - now;
+  const revealTime = new Date("Feb 23, 2026 01:05:00").getTime();
+  const timer = document.getElementById("timer");
 
- if(diff <= 0){
-   clearInterval(countdown);
-   document.getElementById("lockScreen").style.display="none";
-   startCinematic();
- }
+  let countdown = setInterval(() => {
 
- let d=Math.floor(diff/(1000*60*60*24));
- let h=Math.floor((diff%(1000*60*60*24))/(1000*60*60));
- let m=Math.floor((diff%(1000*60*60))/(1000*60));
- let s=Math.floor((diff%(1000*60))/1000);
+    let now = new Date().getTime();
+    let diff = revealTime - now;
 
- timer.innerHTML=`${d}d ${h}h ${m}m ${s}s`;
+    if (diff <= 0) {
+      clearInterval(countdown);
+      document.getElementById("lockScreen").style.display = "none";
+      startCinematic();
+    }
 
-},1000);
+    let d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    let s = Math.floor((diff % (1000 * 60)) / 1000);
 
+    timer.innerHTML = `${d}d ${h}h ${m}m ${s}s`;
 
-// ===== CINEMATIC FLOW =====
-
-function startCinematic(){
- document.getElementById("photoSection").classList.remove("hidden");
- flyPhotos();
-}
+  }, 1000);
 
 
-// ===== PHOTO TRAVEL + ZOOM =====
+  // ===============================
+  // ===== CINEMATIC FLOW ==========
+  // ===============================
 
-function flyPhotos(){
-
- let container=document.getElementById("photoContainer");
- const totalPhotos = 58; // EXACT 55
-
- for(let i=1;i<=totalPhotos;i++){
-
-  let img=document.createElement("img");
-  img.src=`images/seniors/${i}.jpg`;
-
-  // Start scattered outside screen
-  img.style.top = Math.random()*window.innerHeight+"px";
-  img.style.left = (Math.random()*2>1? -200 : window.innerWidth+200)+"px";
-
-  container.appendChild(img);
-
-  // Cinematic entry
-  setTimeout(()=>{
-    img.style.opacity="1";
-    img.style.top = (window.innerHeight/2 - 150 + Math.random()*300)+"px";
-    img.style.left = (window.innerWidth/2 - 250 + Math.random()*500)+"px";
-    img.style.transform="scale(1)";
-  }, i*120);
-
- }
-
- // After all settle → zoom blast
- setTimeout(()=>{
-   zoomCollage();
- },9000);
-}
+  function startCinematic() {
+    document.getElementById("photoSection").classList.remove("hidden");
+    flyPhotos();
+  }
 
 
-// ===== ZOOM COLLAGE EFFECT =====
+  // ===============================
+  // ===== PHOTO TRAVEL + ZOOM =====
+  // ===============================
 
-function zoomCollage(){
- let imgs=document.querySelectorAll("#photoContainer img");
+  function flyPhotos() {
 
- imgs.forEach((img,index)=>{
-   setTimeout(()=>{
-     img.style.transform="scale(2)";
-   }, index*40);
- });
+    let container = document.getElementById("photoContainer");
+    const totalPhotos = 58; // EXACT 55 PHOTOS
 
- // Fade to black
- setTimeout(()=>{
-   document.getElementById("photoSection").classList.add("hidden");
-   document.getElementById("blackTransition").classList.remove("hidden");
+    for (let i = 1; i <= totalPhotos; i++) {
 
-   setTimeout(()=>{
-     showPoster();
-   },2000);
+      let img = document.createElement("img");
+      img.src = `images/seniors/${i}.jpg`;
 
- },4000);
-}
+      // Start from outside screen (left or right)
+      img.style.top = Math.random() * window.innerHeight + "px";
+      img.style.left = (Math.random() > 0.5 ? -200 : window.innerWidth + 200) + "px";
+
+      container.appendChild(img);
+
+      // Cinematic movement toward center
+      setTimeout(() => {
+        img.style.opacity = "1";
+        img.style.top = (window.innerHeight / 2 - 150 + Math.random() * 300) + "px";
+        img.style.left = (window.innerWidth / 2 - 250 + Math.random() * 500) + "px";
+        img.style.transform = "scale(1)";
+      }, i * 120);
+    }
+
+    // After settle → Zoom blast
+    setTimeout(() => {
+      zoomCollage();
+    }, 9000);
+  }
 
 
-// ===== SHOW POSTER =====
+  // ===============================
+  // ===== ZOOM COLLAGE ============
+  // ===============================
 
-function showPoster(){
- document.getElementById("blackTransition").classList.add("hidden");
- document.getElementById("inviteSection").classList.remove("hidden");
+  function zoomCollage() {
 
- setTimeout(()=>{
-   startEvents();
- },9000);
-}
-// ===== POSTER CLICK NAVIGATION =====
+    let imgs = document.querySelectorAll("#photoContainer img");
 
-const poster = document.getElementById("poster");
+    imgs.forEach((img, index) => {
+      setTimeout(() => {
+        img.style.transform = "scale(2.2)";
+      }, index * 40);
+    });
 
-poster.addEventListener("click", () => {
+    // Fade to black transition
+    setTimeout(() => {
 
-  // Fade out poster section
-  document.getElementById("inviteSection").style.opacity = "0";
-  document.getElementById("inviteSection").style.transition = "1s";
+      document.getElementById("photoSection").classList.add("hidden");
+      document.getElementById("blackTransition").classList.remove("hidden");
 
-  setTimeout(() => {
+      setTimeout(() => {
+        showPoster();
+      }, 2000);
 
-    document.getElementById("inviteSection").classList.add("hidden");
+    }, 4000);
+  }
 
-    // Show event section
-    document.getElementById("eventSection").classList.remove("hidden");
-    document.getElementById("eventSection").style.opacity = "0";
 
-    setTimeout(()=>{
-      document.getElementById("eventSection").style.transition="1.5s";
-      document.getElementById("eventSection").style.opacity="1";
-    },100);
+  // ===============================
+  // ===== SHOW INVITATION =========
+  // ===============================
 
-  },1000);
+  function showPoster() {
+    document.getElementById("blackTransition").classList.add("hidden");
+    document.getElementById("inviteSection").classList.remove("hidden");
+  }
+
+
+  // ===============================
+  // ===== POSTER CLICK NAVIGATION =
+  // ===============================
+
+  const poster = document.getElementById("poster");
+
+  poster.addEventListener("click", () => {
+
+    const invite = document.getElementById("inviteSection");
+    const eventSection = document.getElementById("eventSection");
+
+    // Fade out invite
+    invite.style.transition = "1s";
+    invite.style.opacity = "0";
+
+    setTimeout(() => {
+
+      invite.classList.add("hidden");
+      invite.style.opacity = "1";
+
+      // Show events
+      eventSection.classList.remove("hidden");
+      eventSection.style.opacity = "0";
+
+      setTimeout(() => {
+        eventSection.style.transition = "1.5s";
+        eventSection.style.opacity = "1";
+        startEvents(); // Start events ONLY after click
+      }, 100);
+
+    }, 1000);
+  });
+
+
+  // ===============================
+  // ===== EVENT SEQUENCE ==========
+  // ===============================
+
+  const events = [
+    "Welcome & Opening Ceremony",
+    "Fun Games & Interaction",
+    "Cultural Performances",
+    "Memory Sharing",
+    "Awards & Gratitude",
+    "Dinner",
+    "Final Emotional Goodbye"
+  ];
+
+  function startEvents() {
+
+    let display = document.getElementById("eventDisplay");
+    let i = 0;
+
+    function nextEvent() {
+      if (i < events.length) {
+        display.innerText = events[i];
+        i++;
+        setTimeout(nextEvent, 3000);
+      }
+    }
+
+    nextEvent();
+  }
 
 });
-
-
-// ===== EVENT SEQUENCE =====
-
-const events=[
-"Welcome & Opening Ceremony",
-"Fun Games & Interaction",
-"Cultural Performances",
-"Memory Sharing",
-"Awards & Gratitude",
-"Dinner",
-"Final Emotional Goodbye"
-];
-
-function startEvents(){
-
- document.getElementById("inviteSection").classList.add("hidden");
- document.getElementById("eventSection").classList.remove("hidden");
-
- let display=document.getElementById("eventDisplay");
- let i=0;
-
- function nextEvent(){
-   if(i<events.length){
-     display.innerText=events[i];
-     i++;
-     setTimeout(nextEvent,3000);
-   }
- }
-
- nextEvent();
-}
-
-
-
