@@ -1,137 +1,121 @@
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
 
-body{background:black;color:white;text-align:center;overflow-x:hidden}
+body{
+background:black;
+color:white;
+text-align:center;
+overflow-x:hidden;
+}
 
+/* Hide */
+.hidden{
+display:none;
+}
 
-
-.hidden{display:none}
-
-
-
-/* Lock */
-
+/* LOCK SCREEN */
 #lockScreen{
-
-position:fixed;inset:0;
-
-display:flex;flex-direction:column;
-
-justify-content:center;align-items:center;
-
-background:black;z-index:99;
-
+position:fixed;
+inset:0;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:black;
+z-index:99;
 }
 
-
-
-/* Curtain */
-
-#curtainStage{position:fixed;inset:0;overflow:hidden;z-index:50}
-
-.curtain{
-
-position:absolute;width:50%;height:100%;
-
-background-size:cover;
-
-transition:2.5s cubic-bezier(.77,0,.175,1);
-
+#timer{
+font-size:2rem;
+margin-top:20px;
+color:cyan;
+text-shadow:0 0 20px cyan;
 }
 
-.left{left:0;background:url('images/curtain-left.png')}
+/* PHOTO SECTION */
+#photoSection{
+position:relative;
+height:100vh;
+overflow:hidden;
+background:black;
+}
 
-.right{right:0;background:url('images/curtain-right.png')}
+#photoContainer{
+position:relative;
+width:100%;
+height:100%;
+}
 
-.open .left{transform:translateX(-100%)}
-
-.open .right{transform:translateX(100%)}
-
-
-
-/* Sections */
-
-section{min-height:100vh;padding:80px 8%;display:flex;flex-direction:column;justify-content:center}
-
-
-
-#titleSection h1{font-size:3.5rem;text-shadow:0 0 30px cyan}
-
-
-
-/* Seniors */
-
-#photoFlight img{
-
-position:absolute;width:80px;border-radius:10px;
-
+/* PHOTOS */
+.photo{
+position:absolute;
+width:120px;
+border-radius:12px;
+opacity:0;
+transform:scale(0.2);
 transition:2s ease;
-
+border:2px solid transparent;
 }
 
-#collage{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}
-
-
-
-/* Professors */
-
-.profGrid{display:flex;justify-content:center;gap:20px}
-
-.profGrid img{width:150px;border-radius:15px}
-
-
-
-/* Poster */
-
-#poster{width:300px;cursor:pointer;transition:0.5s}
-
-#poster:hover{transform:scale(1.05)}
-
-
-
-/* Agenda */
-
-.agendaGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px}
-
-.agendaGrid button{
-
-padding:15px;background:rgba(255,255,255,0.12);
-
-border:0;border-radius:12px;color:white;
-
-cursor:pointer;transition:0.4s;
-
+/* Neon Glow */
+.glow{
+box-shadow:
+0 0 10px cyan,
+0 0 20px cyan,
+0 0 40px cyan;
+border:2px solid cyan;
 }
 
-.agendaGrid button:hover{transform:scale(1.08);box-shadow:0 0 15px cyan}
-
-
-
-/* Modal */
-
-#modal{
-
-position:fixed;inset:0;
-
-background:rgba(0,0,0,0.7);
-
-display:none;align-items:center;justify-content:center;
-
+/* INVITATION */
+#inviteSection{
+min-height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:40px;
+background:black;
 }
 
-#modalContent{
-
-background:#111;padding:25px;border-radius:15px;width:90%;max-width:400px
-
+#poster{
+width:350px;
+border-radius:20px;
+box-shadow:0 0 40px cyan;
+transition:1s ease;
 }
 
+#poster:hover{
+transform:scale(1.05);
+}
 
+/* EVENTS */
+#eventSection{
+min-height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:50px;
+background:black;
+}
 
-/* Video */
+#eventDisplay{
+font-size:2rem;
+color:white;
+text-shadow:0 0 25px cyan;
+min-height:60px;
+}
 
-video{width:80%;border-radius:15px}
-
-
-
-/* Final */
-
-#finalSection h1{font-size:3rem}
+/* TITLES */
+.neonTitle{
+font-size:3rem;
+color:white;
+text-shadow:
+0 0 10px cyan,
+0 0 20px cyan,
+0 0 40px cyan;
+}
