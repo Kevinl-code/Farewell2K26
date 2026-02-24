@@ -1,6 +1,6 @@
 // ===== TIME LOCK =====
 
-const revealTime = new Date("Feb 23, 2026 01:05:00").getTime();
+const revealTime = new Date("Feb 24, 2026 10:38:00").getTime();
 const timer = document.getElementById("timer");
 
 const interval = setInterval(()=>{
@@ -116,3 +116,4 @@ function showEvents(){
 
  nextEvent();
 }
+
