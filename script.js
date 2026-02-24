@@ -37,7 +37,7 @@ function startCinematic(){
 function flyPhotos(){
 
  let container=document.getElementById("photoContainer");
- const totalPhotos = 60; // EXACT 55
+ const totalPhotos = 58; // EXACT 55
 
  for(let i=1;i<=totalPhotos;i++){
 
@@ -133,4 +133,5 @@ function startEvents(){
 
  nextEvent();
 }
+
 
