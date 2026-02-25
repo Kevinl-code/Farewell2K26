@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>When Will I See You Again – Ultra Cinematic Reveal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@200;400&family=Romanesco&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;overflow:hidden;font-family:'Montserrat',sans-serif}
+canvas{position:fixed;top:0;left:0;width:100vw;height:100vh}
+
+#overlay{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;z-index:10;text-align:center;pointer-events:none;transition: 2s}
+
+.event-title{
+font-family:'Great Vibes',cursive;
+font-size:80px;
+letter-spacing:18px;
+opacity:0;
+background:linear-gradient(120deg,#fff,#0ff,#8ad,#fff);
+background-size:300%;
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+animation:shine 6s linear infinite;
+transition:4s;
+}
+
+@keyframes shine{to{background-position:300%}}
+
+.subtitle{font-size:14px;letter-spacing:4px;opacity:0;margin-top:10px}
+
+#message{
+position:fixed;
+bottom:10%;
+width:100%;
+text-align:center;
+font-family:'Romanesco',cursive;
+font-size:60px;
+color:#fff;
+opacity:0;
+text-shadow:0 0 25px #0ff;
+z-index:15;
+}
+
+#curtainLeft,#curtainRight{
+position:fixed;top:0;width:50%;height:100%;
+background:linear-gradient(90deg,#300,#900,#300);
+z-index:20
+}
+#curtainLeft{left:0;border-right:4px solid gold}
+#curtainRight{right:0;border-left:4px solid gold}
+
+/* POSTER PANEL */
+#posterPanel{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.95);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:60;
+}
+#posterPanel img{
+width:100%;
+height:100%;
+object-fit:contain;
+animation:posterZoom 6s ease-in-out forwards;
+}
+
+@keyframes posterZoom{
+0%{transform:scale(1.1);opacity:0}
+20%{opacity:1}
+100%{transform:scale(1)}
+}
+
+
+#agendaPanel,#agendaDetail,#videoPanel{
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,.92);
+display:none;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+color:white;
+z-index:50;
+text-align:center;
+backdrop-filter: blur(10px);
+}
+
+.agenda{
+font-size:28px;
+margin:14px;
+cursor:pointer;
+transition:.5s;
+opacity:.25;
+}
+
+.agenda.active{
+opacity:1;
+color:#0ff;
+transform:scale(1.15);
+text-shadow:0 0 15px #0ff;
+}
+
+.agenda:hover{
+opacity:1;
+color:#0ff;
+transform:scale(1.15);
+}
+
+#agendaDetail img{
+max-width:420px;
+border-radius:20px;
+box-shadow:0 0 30px rgba(0,255,255,.4);
+margin:20px
+}
+
+#videoPanel video{width:90%;border-radius:20px}
+</style>
+</head>
+
+<body>
+
+<canvas id="webgl"></canvas>
+
+<div id="curtainLeft"></div>
+<div id="curtainRight"></div>
+
+<div id="overlay">
+    <div class="event-title">When Will I See You Again</div>
+    <div class="subtitle">Batch 2024 – 26</div>
+    <div class="subtitle">PG Department of Data Science – Bishop Heber College</div>
+</div>
+
+<div id="message"></div>
+
+<!-- POSTER -->
+<div id="posterPanel">
+<img src="poster/poster.jpeg">
+</div>
+
+
+<div id="agendaPanel">
+<h1 style="font-family:'Great Vibes';font-size:60px;margin-bottom:20px;">Event Agenda</h1>
+<div class="agenda" id="item0" onclick="openAgenda(0)">Welcome Address</div>
+<div class="agenda" id="item1" onclick="openAgenda(1)">Speech</div>
+<div class="agenda" id="item2" onclick="openAgenda(2)">Games</div>
+<div class="agenda" id="item3" onclick="openAgenda(3)">Dance</div>
+<div class="agenda" id="item4" onclick="openAgenda(4)">Gift Distribution</div>
+<div class="agenda" id="item5" onclick="openAgenda(5)">Senior's Words</div>
+<div class="agenda" id="item6" onclick="openAgenda(6)">Vote of Thanks</div>
+<div class="agenda" id="item7" onclick="openAgenda(7)">Cake Cutting</div>
+</div>
+
+<div id="agendaDetail">
+<h1 id="agendaTitle" style="font-family:'Great Vibes';font-size:70px"></h1>
+<p id="agendaText" style="max-width:800px;font-size:22px;line-height:1.8"></p>
+<img id="agendaImg">
+<button onclick="closeAgenda()" style="padding:12px 40px;border-radius:30px;border:0;background:#0ff;font-size:16px;cursor:pointer">Back</button>
+</div>
+
+<div id="videoPanel">
+<video id="mainVideo" src="video/memories.mp4" controls></video>
+</div>
+
+<script>
+const TOTAL_PHOTOS = 58;
+let scene, camera, renderer, particles = [];
+let collageFormed = false;
+
+startShow();
+
+function startShow(){
+gsap.timeline()
+.to('#curtainLeft',{x:'-100%',duration:3,ease:'power4.inOut'})
+.to('#curtainRight',{x:'100%',duration:3,ease:'power4.inOut'},"<")
+.to('.event-title',{opacity:1,letterSpacing:'4px',duration:3},'-=1')
+.to('.subtitle',{opacity:1,stagger:.3,duration:1.5},'-=1.5')
+.call(()=>{initScene();typeWelcome();});
+}
+
+function typeWelcome(){
+const text="Welcome Our Beloved Seniors 💙";
+const el=document.getElementById('message');
+el.style.opacity=1;
+let i=0;
+const iv=setInterval(()=>{
+el.innerHTML+=text[i++];
+if(i>=text.length){
+clearInterval(iv);
+gsap.to('#overlay',{opacity:.15,filter:'blur(6px)',duration:2,delay:0});
+}
+},15);  // ⚡ SUPER FAST
+}
+
+function initScene(){
+scene=new THREE.Scene();
+camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,1,5000);
+camera.position.z=2000;
+
+renderer=new THREE.WebGLRenderer({canvas:webgl,alpha:true,antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+scene.add(new THREE.AmbientLight(0xffffff,1.2));
+
+loadAllPhotos();
+animate();
+gsap.to(camera.position,{z:700,duration:15,ease:'power2.inOut',onComplete:()=>{
+collageFormed=true;
+gsap.to('#message',{opacity:0,duration:1.5});
+setTimeout(showPoster,1500);   // 👈 poster first
+}});
+}
+
+function showPoster(){
+const p=document.getElementById('posterPanel');
+p.style.display='flex';
+gsap.fromTo('#posterPanel',{opacity:0},{opacity:1,duration:2});
+
+setTimeout(()=>{
+gsap.to('#posterPanel',{opacity:0,duration:2,onComplete:()=>{
+p.style.display='none';
+showAgenda();   // 👉 agenda after poster
+}});
+},6000);
+
+
+gsap.to(camera.position,{z:700,duration:15,ease:'power2.inOut',onComplete:()=>{
+collageFormed=true;
+gsap.to('#message',{opacity:0,duration:1.5});
+setTimeout(showAgenda,2000);
+}});
+}
+
+function loadAllPhotos(){
+const loader=new THREE.TextureLoader();
+const cols=10,spacing=110;
+
+for(let i=1;i<=TOTAL_PHOTOS;i++){
+loader.load(`photos/${i}.jpg`,tex=>{
+const mat=new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0});
+const s=new THREE.Sprite(mat);
+s.position.set((Math.random()-.5)*2500,(Math.random()-.5)*2500,(Math.random()-.5)*1500);
+scene.add(s);
+
+gsap.to(mat,{opacity:1,duration:1,delay:i*.06});
+
+const tx=((i-1)%cols)*spacing-(cols*spacing)/2;
+const ty=Math.floor((i-1)/cols)*-spacing+250;
+
+gsap.to(s.position,{x:tx,y:ty,z:0,duration:6,delay:1.5+i*.05,ease:'expo.inOut'});
+gsap.to(s.scale,{x:100,y:100,duration:6,delay:1.5+i*.05,ease:'expo.inOut'});
+});
+}
+}
+
+function animate(){
+requestAnimationFrame(animate);
+scene.rotation.y+=collageFormed?.0004:.003;
+renderer.render(scene,camera);
+}
+
+const agendaData=[
+{t:'Welcome Address',d:'Formal inauguration and warm welcome.',img:'agenda/1.jpg'},
+{t:'Speech',d:'Inspirational speeches.',img:'agenda/2.jpg'},
+{t:'Games',d:'Fun interactive games.',img:'agenda/3.jpg'},
+{t:'Dance',d:'Energetic cultural performances.',img:'agenda/4.jpg'},
+{t:'Gift Distribution',d:'Memorable gifts for seniors.',img:'agenda/5.jpg'},
+{t:"Senior's Words",d:'Heart-touching messages.',img:'agenda/6.jpg'},
+{t:'Vote of Thanks',d:'Gratitude and appreciation.',img:'agenda/7.jpg'},
+{t:'Cake Cutting',d:'Sweet celebrations.',img:'agenda/8.jpg'}
+];
+
+let autoIndex=0,autoCycle;
+
+function showAgenda(){
+agendaPanel.style.display='flex';
+autoCycle=setInterval(()=>{
+document.querySelectorAll('.agenda').forEach(e=>e.classList.remove('active'));
+const item=document.getElementById(`item${autoIndex}`);
+if(item)item.classList.add('active');
+autoIndex++;
+if(autoIndex>=agendaData.length){
+clearInterval(autoCycle);
+setTimeout(showVideo,5000);
+}
+},5000);
+}
+
+function openAgenda(i){
+clearInterval(autoCycle);
+const a=agendaData[i];
+agendaTitle.innerHTML=a.t;
+agendaText.innerHTML=a.d;
+agendaImg.src=a.img;
+agendaPanel.style.display='none';
+agendaDetail.style.display='flex';
+}
+
+function closeAgenda(){
+agendaDetail.style.display='none';
+agendaPanel.style.display='flex';
+}
+
+function showVideo(){
+agendaPanel.style.display='none';
+videoPanel.style.display='flex';
+mainVideo.play();
+}
+
+window.onresize=()=>{
+camera.aspect=innerWidth/innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(innerWidth,innerHeight);
+}
+</script>
+</body>
+</html>
