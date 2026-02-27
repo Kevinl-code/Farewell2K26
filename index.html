@@ -116,6 +116,8 @@ z-index:20
 
 
 
+/* POSTER PANEL */
+
 #posterPanel{
 
 position:fixed;
@@ -157,6 +159,8 @@ animation:posterZoom 6s ease-in-out forwards;
 100%{transform:scale(1)}
 
 }
+
+
 
 
 
@@ -254,10 +258,6 @@ margin:20px
 
 
 
-<audio id="bgm" src="bgm.mp3" preload="auto"></audio>
-
-
-
 <canvas id="webgl"></canvas>
 
 
@@ -284,11 +284,15 @@ margin:20px
 
 
 
+<!-- POSTER -->
+
 <div id="posterPanel">
 
 <img src="poster/poster.jpeg">
 
 </div>
+
+
 
 
 
@@ -330,23 +334,17 @@ margin:20px
 
 
 
-<script>
 
+
+<script>
+const bgm = document.getElementById('bgm');
+
+bgm.volume = 0.6;
 const TOTAL_PHOTOS = 58;
 
 let scene, camera, renderer, particles = [];
 
 let collageFormed = false;
-
-const bgm = document.getElementById("bgm");
-
-
-
-document.body.addEventListener("click",()=>{
-
-bgm.play().catch(()=>{});
-
-},{once:true});
 
 
 
@@ -358,11 +356,17 @@ function startShow(){
 
 gsap.timeline()
 
-.call(()=> bgm.play().catch(()=>{}))
-
 .to('#curtainLeft',{x:'-100%',duration:3,ease:'power4.inOut'})
 
 .to('#curtainRight',{x:'100%',duration:3,ease:'power4.inOut'},"<")
+
+.call(()=>{ 
+
+    bgm.currentTime = 0;
+
+    bgm.play();    // 🎵 start music here
+
+})
 
 .to('.event-title',{opacity:1,letterSpacing:'4px',duration:3},'-=1')
 
@@ -371,8 +375,6 @@ gsap.timeline()
 .call(()=>{initScene();typeWelcome();});
 
 }
-
-
 
 function typeWelcome(){
 
@@ -396,7 +398,7 @@ gsap.to('#overlay',{opacity:.15,filter:'blur(6px)',duration:2,delay:0});
 
 }
 
-},15);
+},15);  // ⚡ SUPER FAST
 
 }
 
@@ -428,13 +430,9 @@ gsap.to(camera.position,{z:700,duration:15,ease:'power2.inOut',onComplete:()=>{
 
 collageFormed=true;
 
-bgm.pause();
-
-bgm.currentTime=0;
-
 gsap.to('#message',{opacity:0,duration:1.5});
 
-setTimeout(showPoster,1500);
+setTimeout(showPoster,1500);   // 👈 poster first
 
 }});
 
@@ -458,11 +456,25 @@ gsap.to('#posterPanel',{opacity:0,duration:2,onComplete:()=>{
 
 p.style.display='none';
 
-showAgenda();
+showAgenda();   // 👉 agenda after poster
 
 }});
 
 },6000);
+
+
+
+
+
+gsap.to(camera.position,{z:700,duration:15,ease:'power2.inOut',onComplete:()=>{
+
+collageFormed=true;
+
+gsap.to('#message',{opacity:0,duration:1.5});
+
+setTimeout(showAgenda,2000);
+
+}});
 
 }
 
@@ -524,6 +536,102 @@ renderer.render(scene,camera);
 
 
 
+const agendaData=[
+
+{t:'Welcome Address',d:'Formal inauguration and warm welcome.',img:'agenda/1.jpg'},
+
+{t:'Speech',d:'Inspirational speeches.',img:'agenda/2.jpg'},
+
+{t:'Games',d:'Fun interactive games.',img:'agenda/3.jpg'},
+
+{t:'Dance',d:'Energetic cultural performances.',img:'agenda/4.jpg'},
+
+{t:'Gift Distribution',d:'Memorable gifts for seniors.',img:'agenda/5.jpg'},
+
+{t:"Senior's Words",d:'Heart-touching messages.',img:'agenda/6.jpg'},
+
+{t:'Vote of Thanks',d:'Gratitude and appreciation.',img:'agenda/7.jpg'},
+
+{t:'Cake Cutting',d:'Sweet celebrations.',img:'agenda/8.jpg'}
+
+];
+
+
+
+let autoIndex=0,autoCycle;
+
+
+
+function showAgenda(){
+
+agendaPanel.style.display='flex';
+
+autoCycle=setInterval(()=>{
+
+document.querySelectorAll('.agenda').forEach(e=>e.classList.remove('active'));
+
+const item=document.getElementById(`item${autoIndex}`);
+
+if(item)item.classList.add('active');
+
+autoIndex++;
+
+if(autoIndex>=agendaData.length){
+
+clearInterval(autoCycle);
+
+setTimeout(showVideo,5000);
+
+}
+
+},5000);
+
+}
+
+
+
+function openAgenda(i){
+
+clearInterval(autoCycle);
+
+const a=agendaData[i];
+
+agendaTitle.innerHTML=a.t;
+
+agendaText.innerHTML=a.d;
+
+agendaImg.src=a.img;
+
+agendaPanel.style.display='none';
+
+agendaDetail.style.display='flex';
+
+}
+
+
+
+function closeAgenda(){
+
+agendaDetail.style.display='none';
+
+agendaPanel.style.display='flex';
+
+}
+
+
+
+function showVideo(){
+
+agendaPanel.style.display='none';
+
+videoPanel.style.display='flex';
+
+mainVideo.play();
+
+}
+
+
+
 window.onresize=()=>{
 
 camera.aspect=innerWidth/innerHeight;
@@ -535,7 +643,13 @@ renderer.setSize(innerWidth,innerHeight);
 }
 
 </script>
+<audio id="bgm" preload="auto">
 
+    <source src="bgm.mp3" type="audio/mpeg">
+
+</audio>
 </body>
+
+
 
 </html>
