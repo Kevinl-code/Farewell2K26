@@ -36,7 +36,7 @@ canvas{position:fixed;top:0;left:0;width:100vw;height:100vh}
 
 
 
-#overlay{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;z-index:10;text-align:center;pointer-events:none;transition:2s}
+#overlay{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;z-index:10;text-align:center;pointer-events:none;transition: 2s}
 
 
 
@@ -59,6 +59,8 @@ background-size:300%;
 -webkit-text-fill-color:transparent;
 
 animation:shine 6s linear infinite;
+
+transition:4s;
 
 }
 
@@ -114,6 +116,8 @@ z-index:20
 
 
 
+/* POSTER PANEL */
+
 #posterPanel{
 
 position:fixed;
@@ -155,6 +159,8 @@ animation:posterZoom 6s ease-in-out forwards;
 100%{transform:scale(1)}
 
 }
+
+
 
 
 
@@ -238,6 +244,10 @@ margin:20px
 
 }
 
+
+
+#videoPanel video{width:90%;border-radius:20px}
+
 </style>
 
 </head>
@@ -260,11 +270,11 @@ margin:20px
 
 <div id="overlay">
 
-  <div class="event-title">When Will I See You Again</div>
+    <div class="event-title">When Will I See You Again</div>
 
-  <div class="subtitle">Batch 2024 – 26</div>
+    <div class="subtitle">Batch 2024 – 26</div>
 
-  <div class="subtitle">PG Department of Data Science – Bishop Heber College</div>
+    <div class="subtitle">PG Department of Data Science – Bishop Heber College</div>
 
 </div>
 
@@ -274,11 +284,15 @@ margin:20px
 
 
 
+<!-- POSTER -->
+
 <div id="posterPanel">
 
-  <img src="poster/poster.jpeg">
+<img src="poster/poster.jpeg">
 
 </div>
+
+
 
 
 
@@ -314,31 +328,19 @@ margin:20px
 
 <img id="agendaImg">
 
-<button onclick="closeAgenda()" style="padding:12px 40px;border-radius:30px;border:0;background:#0ff;font-size:16px">Back</button>
+<button onclick="closeAgenda()" style="padding:12px 40px;border-radius:30px;border:0;background:#0ff;font-size:16px;cursor:pointer">Back</button>
 
 </div>
 
 
 
-<audio id="bgm" preload="auto">
-
-  <source src="bgm.mp3" type="audio/mpeg">
-
-</audio>
-
 
 
 <script>
 
-const bgm = document.getElementById('bgm');
-
-bgm.volume = 0.6;
-
-
-
 const TOTAL_PHOTOS = 58;
 
-let scene, camera, renderer;
+let scene, camera, renderer, particles = [];
 
 let collageFormed = false;
 
@@ -350,19 +352,17 @@ startShow();
 
 function startShow(){
 
-  const tl = gsap.timeline();
+gsap.timeline()
 
-  tl.to('#curtainLeft',{x:'-100%',duration:3,ease:'power4.inOut'})
+.to('#curtainLeft',{x:'-100%',duration:3,ease:'power4.inOut'})
 
-    .to('#curtainRight',{x:'100%',duration:3,ease:'power4.inOut'},"<")
+.to('#curtainRight',{x:'100%',duration:3,ease:'power4.inOut'},"<")
 
-    .call(()=>{ bgm.play().catch(()=>{}); })
+.to('.event-title',{opacity:1,letterSpacing:'4px',duration:3},'-=1')
 
-    .to('.event-title',{opacity:1,letterSpacing:'4px',duration:3},'-=1')
+.to('.subtitle',{opacity:1,stagger:.3,duration:1.5},'-=1.5')
 
-    .to('.subtitle',{opacity:1,stagger:.3,duration:1.5},'-=1.5')
-
-    .call(()=>{ initScene(); typeWelcome(); });
+.call(()=>{initScene();typeWelcome();});
 
 }
 
@@ -370,27 +370,27 @@ function startShow(){
 
 function typeWelcome(){
 
-  const text="Welcome Our Beloved Seniors 💙";
+const text="Welcome Our Beloved Seniors 💙";
 
-  const el=document.getElementById('message');
+const el=document.getElementById('message');
 
-  el.style.opacity=1;
+el.style.opacity=1;
 
-  let i=0;
+let i=0;
 
-  const iv=setInterval(()=>{
+const iv=setInterval(()=>{
 
-    el.innerHTML+=text[i++];
+el.innerHTML+=text[i++];
 
-    if(i>=text.length){
+if(i>=text.length){
 
-      clearInterval(iv);
+clearInterval(iv);
 
-      gsap.to('#overlay',{opacity:.15,filter:'blur(6px)',duration:2});
+gsap.to('#overlay',{opacity:.15,filter:'blur(6px)',duration:2,delay:0});
 
-    }
+}
 
-  },15);
+},15);  // ⚡ SUPER FAST
 
 }
 
@@ -398,45 +398,35 @@ function typeWelcome(){
 
 function initScene(){
 
-  scene=new THREE.Scene();
+scene=new THREE.Scene();
 
-  camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,1,5000);
+camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,1,5000);
 
-  camera.position.z=2000;
-
-
-
-  renderer=new THREE.WebGLRenderer({canvas:webgl,alpha:true,antialias:true});
-
-  renderer.setSize(innerWidth,innerHeight);
-
-  scene.add(new THREE.AmbientLight(0xffffff,1.2));
+camera.position.z=2000;
 
 
 
-  loadAllPhotos();
+renderer=new THREE.WebGLRenderer({canvas:webgl,alpha:true,antialias:true});
 
-  animate();
+renderer.setSize(innerWidth,innerHeight);
+
+scene.add(new THREE.AmbientLight(0xffffff,1.2));
 
 
 
-  gsap.to(camera.position,{
+loadAllPhotos();
 
-    z:700,duration:15,ease:'power2.inOut',
+animate();
 
-    onComplete:()=>{
+gsap.to(camera.position,{z:700,duration:15,ease:'power2.inOut',onComplete:()=>{
 
-      collageFormed=true;
+collageFormed=true;
 
-      gsap.to(bgm,{volume:0,duration:2});
+gsap.to('#message',{opacity:0,duration:1.5});
 
-      setTimeout(()=>bgm.pause(),2000);
+setTimeout(showPoster,1500);   // 👈 poster first
 
-      setTimeout(showPoster,1500);
-
-    }
-
-  });
+}});
 
 }
 
@@ -444,23 +434,39 @@ function initScene(){
 
 function showPoster(){
 
-  const p=document.getElementById('posterPanel');
+const p=document.getElementById('posterPanel');
 
-  p.style.display='flex';
+p.style.display='flex';
 
-  gsap.fromTo('#posterPanel',{opacity:0},{opacity:1,duration:2});
+gsap.fromTo('#posterPanel',{opacity:0},{opacity:1,duration:2});
 
-  setTimeout(()=>{
 
-    gsap.to('#posterPanel',{opacity:0,duration:2,onComplete:()=>{
 
-      p.style.display='none';
+setTimeout(()=>{
 
-      showAgenda();
+gsap.to('#posterPanel',{opacity:0,duration:2,onComplete:()=>{
 
-    }});
+p.style.display='none';
 
-  },6000);
+showAgenda();   // 👉 agenda after poster
+
+}});
+
+},6000);
+
+
+
+
+
+gsap.to(camera.position,{z:700,duration:15,ease:'power2.inOut',onComplete:()=>{
+
+collageFormed=true;
+
+gsap.to('#message',{opacity:0,duration:1.5});
+
+setTimeout(showAgenda,2000);
+
+}});
 
 }
 
@@ -468,37 +474,43 @@ function showPoster(){
 
 function loadAllPhotos(){
 
-  const loader=new THREE.TextureLoader();
+const loader=new THREE.TextureLoader();
 
-  const cols=10,spacing=110;
-
-  for(let i=1;i<=TOTAL_PHOTOS;i++){
-
-    loader.load(`photos/${i}.jpg`,tex=>{
-
-      const mat=new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0});
-
-      const s=new THREE.Sprite(mat);
-
-      s.position.set((Math.random()-.5)*2500,(Math.random()-.5)*2500,(Math.random()-.5)*1500);
-
-      scene.add(s);
+const cols=10,spacing=110;
 
 
 
-      gsap.to(mat,{opacity:1,duration:1,delay:i*.06});
+for(let i=1;i<=TOTAL_PHOTOS;i++){
 
-      const tx=((i-1)%cols)*spacing-(cols*spacing)/2;
+loader.load(`photos/${i}.jpg`,tex=>{
 
-      const ty=Math.floor((i-1)/cols)*-spacing+250;
+const mat=new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0});
 
-      gsap.to(s.position,{x:tx,y:ty,z:0,duration:6,delay:1.5+i*.05,ease:'expo.inOut'});
+const s=new THREE.Sprite(mat);
 
-      gsap.to(s.scale,{x:100,y:100,duration:6,delay:1.5+i*.05,ease:'expo.inOut'});
+s.position.set((Math.random()-.5)*2500,(Math.random()-.5)*2500,(Math.random()-.5)*1500);
 
-    });
+scene.add(s);
 
-  }
+
+
+gsap.to(mat,{opacity:1,duration:1,delay:i*.06});
+
+
+
+const tx=((i-1)%cols)*spacing-(cols*spacing)/2;
+
+const ty=Math.floor((i-1)/cols)*-spacing+250;
+
+
+
+gsap.to(s.position,{x:tx,y:ty,z:0,duration:6,delay:1.5+i*.05,ease:'expo.inOut'});
+
+gsap.to(s.scale,{x:100,y:100,duration:6,delay:1.5+i*.05,ease:'expo.inOut'});
+
+});
+
+}
 
 }
 
@@ -506,11 +518,107 @@ function loadAllPhotos(){
 
 function animate(){
 
-  requestAnimationFrame(animate);
+requestAnimationFrame(animate);
 
-  scene.rotation.y += collageFormed ? 0.0004 : 0.003;
+scene.rotation.y+=collageFormed?.0004:.003;
 
-  renderer.render(scene,camera);
+renderer.render(scene,camera);
+
+}
+
+
+
+const agendaData=[
+
+{t:'Welcome Address',d:'Formal inauguration and warm welcome.',img:'agenda/1.jpg'},
+
+{t:'Speech',d:'Inspirational speeches.',img:'agenda/2.jpg'},
+
+{t:'Games',d:'Fun interactive games.',img:'agenda/3.jpg'},
+
+{t:'Dance',d:'Energetic cultural performances.',img:'agenda/4.jpg'},
+
+{t:'Gift Distribution',d:'Memorable gifts for seniors.',img:'agenda/5.jpg'},
+
+{t:"Senior's Words",d:'Heart-touching messages.',img:'agenda/6.jpg'},
+
+{t:'Vote of Thanks',d:'Gratitude and appreciation.',img:'agenda/7.jpg'},
+
+{t:'Cake Cutting',d:'Sweet celebrations.',img:'agenda/8.jpg'}
+
+];
+
+
+
+let autoIndex=0,autoCycle;
+
+
+
+function showAgenda(){
+
+agendaPanel.style.display='flex';
+
+autoCycle=setInterval(()=>{
+
+document.querySelectorAll('.agenda').forEach(e=>e.classList.remove('active'));
+
+const item=document.getElementById(`item${autoIndex}`);
+
+if(item)item.classList.add('active');
+
+autoIndex++;
+
+if(autoIndex>=agendaData.length){
+
+clearInterval(autoCycle);
+
+setTimeout(showVideo,5000);
+
+}
+
+},5000);
+
+}
+
+
+
+function openAgenda(i){
+
+clearInterval(autoCycle);
+
+const a=agendaData[i];
+
+agendaTitle.innerHTML=a.t;
+
+agendaText.innerHTML=a.d;
+
+agendaImg.src=a.img;
+
+agendaPanel.style.display='none';
+
+agendaDetail.style.display='flex';
+
+}
+
+
+
+function closeAgenda(){
+
+agendaDetail.style.display='none';
+
+agendaPanel.style.display='flex';
+
+}
+
+
+
+function showVideo(){
+
+agendaPanel.style.display='none';
+
+videoPanel.style.display='flex';
+
+mainVideo.play();
 
 }
 
@@ -518,18 +626,18 @@ function animate(){
 
 window.onresize=()=>{
 
-  camera.aspect=innerWidth/innerHeight;
+camera.aspect=innerWidth/innerHeight;
 
-  camera.updateProjectionMatrix();
+camera.updateProjectionMatrix();
 
-  renderer.setSize(innerWidth,innerHeight);
+renderer.setSize(innerWidth,innerHeight);
 
 }
 
 </script>
 
-
-
 </body>
+
+
 
 </html>
